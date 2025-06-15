@@ -1,0 +1,3 @@
+[submodule "embedded-backend"]
+	path = embedded-backend
+	url = https://github.com/justhemantpatil/yourcloud-backend.git
