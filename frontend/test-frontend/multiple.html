@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test YourCloud Upload</title>
+</head>
+<body>
+  <h1>📤 Upload Images to Telegram</h1>
+
+  <form id="uploadForm">
+    <label>📱 Phone Number:</label><br>
+    <input type="text" id="phone_number" name="phone_number" placeholder="+91..." required /><br><br>
+
+    <label>🖼️ Select Images:</label><br>
+    <input type="file" id="files" name="files" multiple required /><br><br>
+
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="response" style="margin-top: 20px;"></div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = new FormData();
+      const phoneNumber = document.getElementById('phone_number').value;
+      const files = document.getElementById('files').files;
+
+      formData.append('phone_number', phoneNumber);
+      for (let i = 0; i < files.length; i++) {
+        formData.append('files', files[i]);
+      }
+
+      const responseElement = document.getElementById('response');
+      responseElement.innerText = 'Uploading...';
+
+      try {
+        const res = await fetch('http://localhost:8000/upload/photos', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          responseElement.innerHTML = `<p style="color:green">✅ Uploaded: ${data.uploaded_files.join(', ')}</p>`;
+        } else {
+          responseElement.innerHTML = `<p style="color:red">❌ Error: ${data.detail}</p>`;
+        }
+      } catch (err) {
+        responseElement.innerHTML = `<p style="color:red">❌ Network Error: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

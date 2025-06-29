@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Image to Telegram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .upload-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            display: block;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #message {
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="upload-container">
+    <h2>Upload Image to Telegram</h2>
+    <form id="uploadForm">
+        <input type="text" id="phone_number" placeholder="Phone Number" required>
+        <input type="text" id="file_name" placeholder="File Name" required>
+        <input type="file" id="file" accept="image/*" required>
+        <button type="submit">Upload</button>
+        <div id="message"></div>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('uploadForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const phone_number = document.getElementById('phone_number').value;
+        const file_name = document.getElementById('file_name').value;
+        const file = document.getElementById('file').files[0];
+
+        const formData = new FormData();
+        formData.append('phone_number', phone_number);
+        formData.append('file_name', file_name);
+        formData.append('file', file);
+
+        try {
+            const res = await fetch('http://localhost:8000/upload/photo', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                message.innerText = data.message;
+                message.style.color = 'green';
+            } else {
+                message.innerText = data.detail || 'Upload failed';
+                message.style.color = 'red';
+            }
+        } catch (error) {
+            message.innerText = 'Error: ' + error.message;
+            message.style.color = 'red';
+        }
+    });
+</script>
+
+</body>
+</html>
